@@ -8,32 +8,31 @@ typedef struct Node{
 } node;
 
 node *head=NULL;
- node * createnode(int data){
-     node *temp = (node *)malloc(sizeof(node));
-     if(temp==NULL){
-         printf("Heap memory exhausted\n");
-         return NULL;
-     }
-     temp->data = data;
-     temp->next = NULL;
-     return temp;
- }
-
-void insertatend(int data){
+node *tail = NULL;
+node *createnode(int data)
+{
+    node *temp = (node *)malloc(sizeof(node));
+    if (temp == NULL)
+    {
+        printf("Heap memory exhausted\n");
+        return NULL;
+    }
+    temp->data = data;
+    temp->next = NULL;
+    return temp;
+}
+void insertatend(int data) {
     node *t = createnode(data);
-    if(t==NULL) return;
+    if (t == NULL) return;
 
-    if(head==NULL){
-        head = t;
+    if (head == NULL) {
+        head = tail = t; 
         return;
     }
-    node *temp = head;
-    while(temp->next!=NULL){
-        temp = temp->next;
-    }
-
-    temp->next = t;
-}
+    
+    tail->next = t;   
+    tail = t;  
+}       
 
 void print (){
     if(head==NULL){

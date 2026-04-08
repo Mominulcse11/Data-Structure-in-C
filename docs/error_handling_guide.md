@@ -1,85 +1,129 @@
-# 🛡️ Beginner's Guide to Error Handling in Data Structures
+## Beginner's Guide to Error Handling in Data Structures
 
-This guide is designed to help you **understand** error handling, not just memorize it. As a student, you want your code to be robust—meaning it doesn't crash even if someone uses it incorrectly.
-
-## 🧠 The Mental Model: "Check Before You Step"
-
-Imagine your data structure is a house.
-- **Memory Allocation (`malloc`)** is building a new room. You must check if you have land (memory) available.
-- **Pointers** are addresses of rooms. `NULL` means "Nowhere". You cannot enter a room that is "Nowhere".
-- **Accessing Data** is walking into a room. You cannot walk into a room that doesn't exist.
+This guide is designed to help you understand error handling, not just memorize it. As a student, you want your code to be robust — meaning it does not crash even when someone uses it incorrectly.
 
 ---
 
-## 🚦 The 3 Golden Rules
-Every time you write a function, ask these three questions:
+## The Mental Model: "Check Before You Step"
 
-1.  **Is it Empty?** (Can I delete or peek?)
-2.  **Is it Full?** (Can I insert?)
-3.  **Does it Exist?** (Is the pointer NULL?)
+Think of your data structure as a house. Memory allocation with `malloc` is like building a new room — you must first confirm you have the land, or memory, available. Pointers are the addresses of those rooms, and `NULL` means the address leads nowhere. You cannot enter a room that does not exist, and you cannot access data through a pointer that points to nothing.
 
 ---
 
-## 📚 Common Errors & How to Fix Them
+## The Three Golden Rules
 
-### 1. The "Memory Full" Crash (Heap Overflow)
-When you create a new node, the computer *might* say no. You must listen.
+Every time you write a function, ask yourself three questions before writing any logic:
 
-**❌ Bad:**
+1. Is it empty? (Can I delete or peek at anything?)
+2. Is it full? (Can I insert something new?)
+3. Does it exist? (Is the pointer NULL?)
+
+---
+
+## Common Errors and How to Fix Them
+
+### 1. The Memory Full Crash (Heap Overflow)
+
+When you create a new node, the system might not have memory to give you. You must account for that possibility.
+
+**Bad:**
 ```c
 node *temp = malloc(sizeof(node));
-temp->data = 10; // CRASH if malloc failed!
+temp->data = 10; // Crashes if malloc failed
 ```
 
-**✅ Good:**
+**Good:**
 ```c
 node *temp = malloc(sizeof(node));
 if (temp == NULL) {
     printf("Error: Memory Full!\n");
-    return; // Stop right here
+    return;
 }
-temp->data = 10; // Safe
+temp->data = 10; // Safe to proceed
 ```
 
-### 2. The "Ghost Room" (NULL Pointer Dereference)
-Trying to access data inside a `NULL` pointer is the #1 cause of crashes (Segmentation Faults).
+### 2. The NULL Pointer Dereference
 
-**❌ Bad:**
+Trying to access data through a `NULL` pointer is the single most common cause of crashes, known as a segmentation fault.
+
+**Bad:**
 ```c
-while (temp->data != target) { // CRASH if temp becomes NULL
+while (temp->data != target) { // Crashes if temp becomes NULL
     temp = temp->next;
 }
 ```
 
-**✅ Good:**
+**Good:**
 ```c
-// Check if temp exists FIRST
 while (temp != NULL && temp->data != target) {
     temp = temp->next;
 }
 ```
 
-### 3. The "Lost Head" (Updating Head Pointer)
-When inserting at the beginning or deleting the first node, the `head` of your list changes. If you don't update the global `head`, you lose the new node (memory leak) or keep referring to the deleted one.
+Always check whether the pointer exists before reading from it.
 
-**✅ Fix:** Always explicitely update `head = newItem` when inserting at start.
+### 3. The Lost Head (Updating the Head Pointer)
 
-### 4. The "Off-By-One" (Array Bounds)
-Arrays start at 0. If size is 5, valid indices are 0, 1, 2, 3, 4.
+When inserting at the beginning or deleting the first node, the head of your list changes. If you forget to update `head`, you either lose track of the new node — causing a memory leak — or you continue referencing a node that has already been freed.
 
-**❌ Bad:**
+Always explicitly update `head = newItem` when inserting at the start of a list.
+
+### 4. The Off-By-One Error (Array Bounds)
+
+Arrays are zero-indexed. If a structure has a capacity of 5, the valid indices are 0 through 4. A common mistake is writing conditions that exclude the zero index.
+
+**Bad:**
 ```c
-if (top > 0) ... // Ignores index 0!
+if (top > 0) ... // Misses index 0
 ```
 
-**✅ Good:**
+**Good:**
 ```c
-if (top >= 0) ... // Includes index 0
+if (top >= 0) ... // Correctly includes index 0
 ```
 
 ---
 
-## 🛠️ Checklist for specific Data Structures
+## Checklist for Specific Data Structures
+
+**Linked List**
+- Insert: Did you handle a `malloc` failure?
+- Delete: Is the list empty (`head == NULL`)?
+- Delete: Are you deleting the first node? If so, update `head`.
+- Delete: Are you deleting the last node? If so, update the tail or the previous node's `next` pointer.
+- Traversal: Does your loop stop at `NULL`?
+
+**Stack (Array-based)**
+- Push: Is `top == capacity - 1`? That is a stack overflow.
+- Pop: Is `top == -1`? That is a stack underflow.
+
+**Queue (Array-based)**
+- Enqueue: Is `rear == capacity - 1`?
+- Dequeue: Is `front == -1`? The queue is empty.
+- Front and rear boundary checks should use `>= 0`, not `> 0`.
+
+---
+
+## Fail Early
+
+A clean habit is to handle all error conditions at the very top of your function, before any real logic begins. This keeps the main body of your code uncluttered and easy to read.
+
+```c
+void deleteFirst() {
+    // Error check first
+    if (head == NULL) {
+        printf("List is empty.\n");
+        return;
+    }
+
+    // Real logic second
+    node *temp = head;
+    head = head->next;
+    free(temp);
+}
+```
+
+When the error path exits early with a `return`, the rest of the function can be written with the confidence that all preconditions are already satisfied.
 
 ### 🟦 Linked List
 - [ ] **Insert**: Did I handle `malloc` failure?
