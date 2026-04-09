@@ -97,6 +97,69 @@ void search_edge(NODE* GRAPH[], int N, int u, int v)
         }
     }
 }
+int outgoingEdgeCount(NODE* GRAPH[], int N, int node)
+{
+    int count = 0;
+    NODE* temp = GRAPH[node];
+
+    while (temp != NULL)
+    {
+        count++;
+        temp = temp->NEXT;
+    }
+
+    return count;
+}
+
+int incomingEdgeCount(NODE* GRAPH[], int N, int node)
+{
+    int count = 0;
+
+    for (int i = 0; i < N; i++)
+    {
+        NODE* temp = GRAPH[i];
+
+        while (temp != NULL)
+        {
+            if (temp->INFO == node)
+                count++;
+
+            temp = temp->NEXT;
+        }
+    }
+
+    return count;
+}
+int checkEdge(NODE* GRAPH[], int u, int v)
+{
+    NODE* temp = GRAPH[u];
+
+    while (temp != NULL)
+    {
+        if (temp->INFO == v)
+            return 1;
+        temp = temp->NEXT;
+    }
+    return 0;
+}
+int checkTriangularCycleBetween(NODE* GRAPH[], int N, int u, int v)
+{
+    NODE* temp = GRAPH[u];
+
+    while (temp != NULL)
+    {
+        int w = temp->INFO;
+
+        if (checkEdge(GRAPH, w, v) && checkEdge(GRAPH, v, u))
+        {
+            return 1; // triangle found
+        }
+
+        temp = temp->NEXT;
+    }
+
+    return 0;
+}
 
 // Function to print the entire adjacency list
 void print(NODE* GRAPH[], int N) 
@@ -138,6 +201,10 @@ int main()
 
     printf("\nGraph after insertions:\n");
     print(GRAPH, N);
+
+    printf("Outgoing nodes of 1   %d\n", outgoingEdgeCount(GRAPH, N, 1));
+
+    printf("Incoming nodes of 1   %d\n", incomingEdgeCount(GRAPH, N, 1));
 
     // Searching
     search_edge(GRAPH, N, 0, 1); // Should be found

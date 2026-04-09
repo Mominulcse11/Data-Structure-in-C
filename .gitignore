@@ -10,3 +10,4 @@ Thumbs.db
 
 # VS Code specific
 .vscode/
+.gitignore

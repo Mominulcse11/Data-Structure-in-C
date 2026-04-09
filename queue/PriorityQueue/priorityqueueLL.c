@@ -32,7 +32,7 @@ void enqueue(int data,int priority){
     }
 
     //case 2: Higher priority than head
-    if(priority<head->priority){
+    if(priority>head->priority){
         temp->next = head;
         head = temp;
         return;
@@ -40,7 +40,7 @@ void enqueue(int data,int priority){
     
     //case 3:Insert in middle or end for priority
     node *current = head;
-    while(current->next!=NULL&& current->next->priority <=priority){
+    while(current->next!=NULL&& current->next->priority >=priority){
 
         current = current->next;
     }
@@ -49,16 +49,51 @@ void enqueue(int data,int priority){
     current->next = temp;
 }
 //Dequeue highest priority element
-int dequeue(){
+void dequeue(){
     if(head ==NULL){
         printf(" Queue underflow!Queue is empty \n");
-        return -1;
+       
     }
     node *temp = head;
-    int value = temp->data;
     head = head->next;
+    printf("Removed: %d (priority %d)\n", temp->data, temp->priority);
+
     free(temp);
-    return value;
+}
+void updatePriority(int index, int newPriority){
+    if(head == NULL){
+        printf("Empty list\n");
+        return;
+    }
+
+    node *current = head;
+    node *prev = NULL;
+    int i = 0;
+
+    while(current != NULL && i < index){
+        prev = current;
+        current = current->next;
+        i++;
+    }
+
+    if(current == NULL){
+        printf("Invalid index\n");
+        return;
+    }
+
+    int value = current->data;
+
+    // remove node
+    if(prev == NULL){
+        head = current->next;
+    } else {
+        prev->next = current->next;
+    }
+
+    free(current);
+
+    // reinsert with new priority
+    enqueue(value, newPriority);
 }
  void front (){
     if(head==NULL){
@@ -78,6 +113,24 @@ void rear(){
     }
     printf("Rear Element: %d\n", temp->data);  
 }
+void findMaxElement(){
+    if(head == NULL){
+        printf("Empty list\n");
+        return;
+    }
+
+    node *current = head;
+    int max = current->data;
+
+    while(current != NULL){
+        if(current->data > max){
+            max = current->data;
+        }
+        current = current->next;
+    }
+
+    printf("Max value: %d\n", max);
+}
 void print (){
     //empty check
     if(head==NULL){
@@ -85,9 +138,9 @@ void print (){
         return;
     }
     node *temp = head;
-    printf("Queue : ");
+    printf("Queue : \n ");
     while(temp!=NULL){
-        printf("%d -> ", temp->data);
+        printf("(%d : %d) -> ", temp->data,temp->priority);
         temp=temp -> next;
         
     }
@@ -96,19 +149,21 @@ void print (){
 int main(){
 
     enqueue(10, 3);
-    enqueue(20, 1);
+    enqueue(20, 7);
     enqueue(30, 2);
     enqueue(40, 0);
 
     print();
-
-    printf("\nDequeued: %d\n", dequeue());
+    findMaxElement();
+    dequeue();
     front();
     rear();
 
 
     print();
-
+    updatePriority(1, 9);
+    printf("After updating \n");
+    print();
     return 0;
 }
 

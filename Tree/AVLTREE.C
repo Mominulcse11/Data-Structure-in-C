@@ -1,19 +1,12 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-/* =========================
-   Node Structure
-   ========================= */
 typedef struct Node {
     int data;
     struct Node* left;
     struct Node* right;
     int height;
 } Node;
-
-/* =========================
-   Utility Functions
-   ========================= */
 
 int max(int a, int b) {
     return (a > b) ? a : b;
@@ -39,9 +32,6 @@ int getBalance(Node* node) {
     return height(node->left) - height(node->right);
 }
 
-/* =========================
-   Rotations
-   ========================= */
 
 // Right Rotation (LL case)
 Node* rightRotate(Node* y) {
@@ -71,9 +61,6 @@ Node* leftRotate(Node* x) {
     return y;
 }
 
-/* =========================
-   Insert
-   ========================= */
 
 Node* insert(Node* node, int key) {
 
@@ -116,18 +103,12 @@ Node* insert(Node* node, int key) {
     return node;
 }
 
-/* =========================
-   Find Minimum
-   ========================= */
 Node* findMin(Node* node) {
     while (node->left != NULL)
         node = node->left;
     return node;
 }
 
-/* =========================
-   Delete
-   ========================= */
 Node* deleteNode(Node* root, int key) {
 
     if (root == NULL)
@@ -190,9 +171,7 @@ Node* deleteNode(Node* root, int key) {
     return root;
 }
 
-/* =========================
-   Inorder Traversal
-   ========================= */
+
 void inorder(Node* root) {
     if (root != NULL) {
         inorder(root->left);
@@ -201,9 +180,7 @@ void inorder(Node* root) {
     }
 }
 
-/* =========================
-   Main
-   ========================= */
+
 int main() {
 
     Node* root = NULL;
